@@ -21,8 +21,50 @@ export const extract_json = (response: string) => {
   }
 }
 
+interface Message {
+  role: "system" | "user" | "assistant";
+  content: string;
+}
+
+export const chat = async(messages: Message[], options: any = null) => {
+    const payload = await fetch('http://100.101.237.13:11434/api/chat', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+            model: 'llama3',
+            messages,
+            stream: true,
+            ...options
+        })
+    })
+    let fullResponse = ''
+
+    const decoder = new TextDecoder()
+    const reader = payload.body!.getReader()
+
+    while (true) {
+        const { done, value } = await reader?.read()
+        if (!reader) continue
+        if (done) break
+        
+        const chunk = decoder.decode(value, {stream: true})
+        try {
+            const jsonChunk = JSON.parse(chunk)
+            process.stdout.write(jsonChunk.message.content)
+            fullResponse += jsonChunk.message.content
+        } catch (e) {
+            console.log('\nexited abruptly: ', chunk)
+        }
+    }
+
+    // console.timeEnd('Steve is asking LLM')
+    return fullResponse
+}
+
 export const ask = async (prompt: string, options: any = {}) => {
-    console.time('Steve is asking LLM')
+    // console.time('Steve is asking LLM')
     const payload = await fetch('http://100.101.237.13:11434/api/generate', {
         method: 'POST',
         headers: {
@@ -55,7 +97,7 @@ export const ask = async (prompt: string, options: any = {}) => {
         }
     }
 
-    console.timeEnd('Steve is asking LLM')
+    // console.timeEnd('Steve is asking LLM')
     return fullResponse
 }
 
