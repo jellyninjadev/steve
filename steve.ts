@@ -35,7 +35,7 @@ export const chat = async(messages: Message[], options: any = null) => {
         body: JSON.stringify({ 
             model: 'llama3',
             messages,
-            stream: true,
+            stream: false,
             ...options
         })
     })
@@ -52,7 +52,7 @@ export const chat = async(messages: Message[], options: any = null) => {
         const chunk = decoder.decode(value, {stream: true})
         try {
             const jsonChunk = JSON.parse(chunk)
-            process.stdout.write(jsonChunk.message.content)
+            // process.stdout.write(jsonChunk.message.content)
             fullResponse += jsonChunk.message.content
         } catch (e) {
             console.log('\nexited abruptly: ', chunk)
@@ -65,17 +65,18 @@ export const chat = async(messages: Message[], options: any = null) => {
 
 export const ask = async (prompt: string, options: any = {}) => {
     // console.time('Steve is asking LLM')
+    const body = JSON.stringify({
+      model: 'deepSeek-R1',
+      prompt,
+      stream: true,
+      ...options
+    })
     const payload = await fetch('http://100.101.237.13:11434/api/generate', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ 
-            model: 'deepSeek-R1',
-            prompt,
-            stream: true,
-            ...options
-        })
+        body
     })
     let fullResponse = ''
 
@@ -90,7 +91,7 @@ export const ask = async (prompt: string, options: any = {}) => {
         const chunk = decoder.decode(value, {stream: true})
         try {
             const jsonChunk = JSON.parse(chunk)
-            process.stdout.write(jsonChunk.response)
+            body.stream && process.stdout.write(jsonChunk.response)
             fullResponse += jsonChunk.response
         } catch (e) {
             // console.log('\nexited abruptly: ', chunk)

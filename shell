@@ -1,0 +1,4 @@
+#!/bin/bash
+
+bun run ~/Projects/steve/agents/agent.ts "$1" "$2"
+
