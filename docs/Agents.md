@@ -1,70 +1,34 @@
-It’s totally understandable that the agents in the Marketcraft game might seem similar at first glance—they all work together to help Steve succeed, which can blur the lines between them. Let’s focus on the **Planner** and **Observer** agents to clarify their unique roles and make sense of how they differ. I’ll use a simple scenario to show how they work together, then provide short summaries for each, along with the **Life Agent** and **Action Agent**, to give you the full picture.
+# Agents
 
----
+## Framework Assessment Tool
 
-### **Scenario: How Planner and Observer Work Together**
-Imagine it’s a new turn in the game. Here’s how the agents contribute:
+Here's a universal framework assessment tool structured around
+core concepts, with biome-agnostic questions to evaluate any
+system's maturity and next steps.
 
-- **Observer Agent**: Looks at what’s happening right now.
-  - It checks the market: "The ETF is stable at $21."
-  - It reviews Steve’s resources: "100 coins, basic computing power."
-  - It notes the intern’s status: "Hunger 6/10, Health 8/10."
-  - Output: "The market’s stable, Steve has enough coins for a small trade, and the intern’s moderately hungry."
+## System Progression Advisor
 
-- **Planner Agent**: Takes that info and decides what Steve should do next.
-  - It sees the stable market and sufficient coins.
-  - Output: "Buy $20 ETF to start building the portfolio."
+You are a systems progression advisor.
+Generate **one specific question** that:
 
-In this case:
-- The **Observer** tells Steve *what’s going on* (the current situation).
-- The **Planner** tells Steve *what to aim for* (the next strategic step).
+1. Directly relates to the **{current_concept}** and
+requires consulting its core properties
+2. Builds logically from the **{completed_task}**
+3. Guides toward an immediate actionable next step
 
-They’re like a team: the Observer provides the snapshot, and the Planner uses it to chart the course.
+## Minecraft Curriculum
 
----
+Creating a curriculum for an autonomous LLM-powered trading
+agent infused with Minecraft vibes would blend the game's open-
+world creativity, resourcefulness, and emergent systems with
+financial strategy.
 
-### **Short Summaries of Each Agent**
+## Autonomous Code Contribution Agent
 
-#### **Observer Agent**
-- **Role**: Watches the game world and sums up what’s happening.
-- **What it does**:
-  - Tracks market trends (e.g., "ETF at $21, stable").
-  - Checks Steve’s resources (e.g., "100 coins").
-  - Monitors the intern (e.g., "Hunger 6/10").
-  - Gives a clear summary with insights (e.g., "Low risk for trades").
-- **In short**: It’s the "eyes and ears"—shows Steve the current reality without making decisions.
+Git-Centric Autonomous Programmer Agent prompt,
+treating every task as a potential pull request
+in a production-grade workflow.
 
-#### **Planner Agent**
-- **Role**: Figures out the next smart move based on the situation.
-- **What it does**:
-  - Takes the Observer’s summary and picks a task (e.g., "Buy $20 ETF").
-  - Keeps goals in mind: survival, improvement, or financial growth.
-  - Makes sure the task is doable and strategic.
-- **In short**: It’s the "strategist"—plans what Steve should focus on next.
+# Workflow loop
 
-#### **Life Agent** (Bonus for Clarity)
-- **Role**: Keeps Steve and the intern alive by watching critical resources.
-- **What it does**:
-  - Checks if coins, energy, or intern stats (like hunger) are too low.
-  - Warns Steve if something’s critical (e.g., "Feed the intern now!").
-  - Stays quiet if all’s well.
-- **In short**: It’s the "lifeguard"—steps in only when survival’s at risk.
 
-#### **Action Agent** (Bonus for Clarity)
-- **Role**: Turns plans into specific actions.
-- **What it does**:
-  - Decides exactly how to act (e.g., "Buy $20 ETF right now").
-  - Balances survival, improvement, and growth.
-  - Uses market data and the Planner’s task to choose wisely.
-- **In short**: It’s the "doer"—makes the plan happen.
-
----
-
-### **How They’re Different**
-- **Observer**: Just watches and reports—no opinions on what to do.
-- **Planner**: Uses the report to pick a goal—doesn’t act on it.
-- **Action Agent**: Takes the goal and acts—focuses on the "how."
-- **Life Agent**: Only cares about survival—overrides others if needed.
-
-Think of it as a chain:
-- Observer sees → Planner plans → Action Agent acts, while Life Agent guards the basics.

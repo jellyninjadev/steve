@@ -1,3 +1,4 @@
+import { $ } from 'bun'
 import { readdir } from 'node:fs/promises'
 import { ask } from './steve.ts'
 
@@ -9,10 +10,6 @@ const lines = files
     .join('\n')
 
 await Bun.write('save/index.ts', lines)
-Bun.spawnSync(['./node_modules/.bin/typedoc', '--skipErrorChecking', '--entryPoints', 'save/index.ts', '--json', 'out.json'])
-const definitions = await Bun.file('out.json').json()
+await $`bun run symbols`.quiet()
 
-const response = await ask(`Using the definitions, compile a consice summary and usage. Definitons: ${JSON.stringify(definitions)}`)
-console.log(response)
-
-Bun.spawnSync(['bun', './heartbeat.ts'], {stdout: 'inherit'}) // capture the output of the spawned process
+await $`bun ./heartbeat.ts`.text()

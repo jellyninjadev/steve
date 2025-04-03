@@ -1,6 +1,27 @@
 import { stdin } from "bun"
 
-export const ask = async (prompt: string) => {
+export const extract_thinking = (response: string) => {
+  const thinking = response.match(/<think>([\s\S]*?)<\/think>\s*/s)
+  return thinking ? thinking[1] : null
+}
+
+export const trim = (response: string) => {
+  response = response.replace(/<think>.*?<\/think>\s*/s, '')
+  response = response.replace(/```json\s*[\s\S]*?\s*```/s, '')
+  return response.trim()
+}
+
+export const extract_json = (response: string) => {
+  const payload = response.match(/```json\s*([\s\S]*?)\s*```/s)
+  if (!payload) return null
+  try {
+    return JSON.parse(payload[1])
+  } catch (e) {
+    return null
+  }
+}
+
+export const ask = async (prompt: string, options: any = {}) => {
     console.time('Steve is asking LLM')
     const payload = await fetch('http://100.101.237.13:11434/api/generate', {
         method: 'POST',
@@ -10,7 +31,8 @@ export const ask = async (prompt: string) => {
         body: JSON.stringify({ 
             model: 'deepSeek-R1',
             prompt,
-            stream: true
+            stream: true,
+            ...options
         })
     })
     let fullResponse = ''
@@ -19,16 +41,17 @@ export const ask = async (prompt: string) => {
     const reader = payload.body!.getReader()
 
     while (true) {
-        const { done, value } = await reader!.read()
+        const { done, value } = await reader?.read()
+        if (!reader) continue
         if (done) break
         
+        const chunk = decoder.decode(value, {stream: true})
         try {
-            const chunk = decoder.decode(value)
             const jsonChunk = JSON.parse(chunk)
             process.stdout.write(jsonChunk.response)
             fullResponse += jsonChunk.response
         } catch (e) {
-            console.log('exited abruptly')
+            // console.log('\nexited abruptly: ', chunk)
         }
     }
 
@@ -36,22 +59,24 @@ export const ask = async (prompt: string) => {
     return fullResponse
 }
 
+type Execution = {
+    agent: 'Observer' | 'Planner' | 'Executioner'
+    timestamp: number, 
+    completed: false,
+    task: string,
+    subtasks: Execution[]
+}
+
 type State = {
-    coins: number,
+    BTC: number,
     intern: 'active' | 'inactive',
-    timestamp: number,
-    history: { timestamp: number, prompt: string }[]
+    history: Execution[]
 }
 
 export const remember = async () => {
     console.time('Steve is remembering')
     const blob = Bun.file('state.json', { type: 'application/json' })
-    let state: State = {
-        coins: 0,
-        intern: 'active',
-        timestamp: Date.now(),
-        history: []
-    }
+    let state = {}
     try {
         state = JSON.parse(await blob.text())
     } catch (e) {

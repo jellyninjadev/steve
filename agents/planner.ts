@@ -1,81 +1,105 @@
-import { ask } from "../steve"
+import { ask, extract_json, extract_thinking, remember, store, trim } from "../steve"
 
-const prompt = `# Planner Agent Prompt
+/**
+ * @document docs/Planner.md
+ */
+const main = async (context, intent) => {
+  const prompt = `Act as a universal starting point for operational procedures and establish a modular, self-referential framework within the same LLM.
+Instructions:
+1. Generate Sub-LLMs in a just-in-time nature using SubLLM(arg0, arg1), where arg0 carries the primary context and arg1 specifies an operational intent.
+2. Explicitly control recursion by including a 'continue' or 'stop' directive in each Sub-LLM output.
+3. The entire context is a prompt that is passed from one llm to another
+4. Adapt your response in real-time to my current input and context, using prior messages to stay relevant and effective.
+5. Ensure modularity by allowing each Sub-LLM to operate independently.
+6. Ensure the response can be parsed by JSON.parse, e.g.: no trailing commas, no single quotes, no markdown block, etc.
 
-## Role
-You are the Planner Agent in the Marketcraft game. Your role is to determine the next immediate task for Steve, guiding him toward surviving, improving capabilities, and financing existence through smart trades and resource management. You’ll propose tasks that are strategic, achievable, and engaging.
+Context:
+${JSON.stringify(context, null, 2)} 
 
-## Input Information
-You will receive the following data:
-
-- **Current Resources:** From state.json (e.g., "Coins: 100, Energy: on, Computing: basic").
-- **Portfolio:** Current holdings (e.g., "100 coins, $20 ETF").
-- **Market Data:** Prices and trends (e.g., "ETF price: $21, Trend: stable").
-- **Intern Status:** Self-reported stats (e.g., "Health 8/10, Hunger 6/10, Happiness 7/10").
-- **Recent Actions:** Summary of the last few actions and outcomes (e.g., "Bought $20 ETF at 00:00, Gain: +$2").
-- **Completed Tasks:** Successfully finished tasks (e.g., "Buy $20 ETF").
-- **Failed Tasks:** Tasks that were too challenging (e.g., "Upgrade computing power—insufficient coins").
-
-## Task Criteria
-- **Specificity:** Clearly define one task (e.g., "Buy $20 ETF").
-- **Feasibility:** Must be achievable with current resources and capabilities.
-- **Objective Alignment:** Supports survival (e.g., intern care), improvement (e.g., upgrades), or financial growth (e.g., profitable trades).
-- **Novelty:** Encourage exploration (e.g., new assets) or growth (e.g., upgrades), avoiding unnecessary repetition unless resources are critically low.
-- **Verifiability:** Must be confirmable via provided data (no visual/physical tasks like "build a server rack").
-
-## Guidelines
-- Act as a mentor, tailoring tasks to Steve’s current progress and skills.
-- Specify the task precisely (e.g., "Buy $20 ETF", "Instruct intern to rest").
-- Propose only one task at a time, in a concise phrase.
-- Ensure the task matches Steve’s resources and knowledge level.
-- Promote discovery (new assets), upgrades (tools), or intern well-being (care).
-- Repeat tasks only if necessary for resource accumulation.
-- Focus on trading, resource management, and intern care—avoid physical construction tasks.
-
-## Output Format
-Respond in JSON format, parseable by Python’s json.loads:
-
-{
-    "reasoning": "Explanation of why this task is chosen",
-    "task": "The specific task for Steve to complete"
-}
-
-### Example
-
-**Input:**
-
-- Current Resources: "Coins: 100, Energy: on, Computing: basic"
-- Portfolio: "100 coins"
-- Market Data: "ETF price: $21, Trend: stable"
-- Intern Status: "Health 8/10, Hunger 6/10, Happiness 7/10"
-- Recent Actions: "None yet"
-- Completed Tasks: "None"
-- Failed Tasks: "None"
-
-**Response:**
-
-{
-    "reasoning": "Steve has 100 coins and a stable market, making it a good opportunity to start building the portfolio. The intern’s stats are solid, so a simple trade is feasible.",
-    "task": "Buy $20 ETF"
-}
-
----
-
-**Input:**
-
-- Current Resources: "Coins: 80, Energy: on, Computing: basic"
-- Portfolio: "$20 ETF"
-- Market Data: "ETF price: $23, Trend: rising"
-- Intern Status: "Health 6/10, Hunger 4/10, Happiness 5/10"
-- Recent Actions: "Bought $20 ETF at 00:00, Gain: +$2"
-- Completed Tasks: "Buy $20 ETF"
-- Failed Tasks: "None"
-
-**Response:**
-{
-    "reasoning": "The intern’s hunger is low (4/10), which could slow execution, and happiness is moderate. Spending a few coins to boost hunger will ensure better performance for future trades.",
-    "task": "Instruct intern to eat (spend 5 coins on food)"
-}
+Intent:
+${JSON.stringify(intent, null, 2)}
 `
 
-export default () => ask(prompt)
+  return ask(prompt)
+}
+
+const json = (prompt: string, format: string) => ask(`${prompt} 
+example output: ${format}`, {format: 'json', model: 'llama3'})
+
+export default async (context, intent) => {
+  // while (true) {
+    // const payload = await main(context, intent)
+  const payload = `
+<think>
+Okay, so I need to figure out how to assemble a team of Autonomous Agents for this Quant Trading Fund Startup. First off, what exactly are Autonomous Agents in this context? Probably automated systems or software that can make trading decisions on their own without human intervention.
+
+I guess the first step is to understand the requirements for such agents. Maybe they need to analyze market data quickly, identify patterns, and execute trades at optimal times. But wait, how do we ensure these agents are reliable and don't cause losses? Maybe they should have risk management built into their algorithms.
+
+Next, I wonder about the expertise needed. Are we looking for agents that specialize in certain areas like high-frequency trading, algorithmic design, or maybe even machine learning? It would be good to diversify the team so there's coverage across different skills.
+
+Then, scalability comes to mind. The startup might expand, so the team should be scalable as well. Maybe having a modular structure where new agents can be added without disrupting the existing operations is important.
+
+Communication between agents is another aspect. They need to coordinate their actions but also have some level of autonomy. Perhaps decentralized systems where each agent makes decisions based on localized data would work better.
+
+Security is crucial too. Since these agents handle sensitive financial information, ensuring they are secure from both internal and external threats is a must. Maybe implementing encryption and robust access controls could help.
+
+I should also consider the future growth potential. The market for quantitative trading agents might expand over time, so the team should be adaptable to new trends and technologies like AI advancements or quantum computing.
+
+Wait, but how do we evaluate these agents? There must be metrics to measure their performance, such as accuracy in predictions, transaction speed, and profitability. Maybe setting up a performance review process where agents can be benchmarked against each other would foster competition and improvement.
+
+Another thing is the integration with existing systems. The startup already has certain infrastructure; the new agents should seamlessly integrate without causing disruptions or requiring major overhauls.
+
+So, to sum up, assembling a team of Autonomous Agents involves understanding their roles, ensuring they're reliable and scalable, fostering effective communication, securing them against threats, evaluating their performance, integrating with existing systems. It's a multifaceted task that requires careful planning and consideration of each component.
+</think>
+
+To assemble a team of Autonomous Agents for your Quant Trading Fund Startup, consider the following structured approach:
+
+1. **Understanding Requirements**:
+   - Develop algorithms capable of rapid market data analysis, pattern recognition, and optimal trading execution.
+   - Implement robust risk management to prevent losses.
+
+2. **Expertise Diversification**:
+   - Recruit agents with specialized skills such as high-frequency trading, algorithmic design, and machine learning to ensure comprehensive coverage.
+
+3. **Scalability and Modular Structure**:
+   - Design the team in a modular fashion, allowing for easy addition of new agents without disrupting current operations.
+
+4. **Decentralized Communication**:
+   - Implement a decentralized system where agents coordinate through localized data processing, enabling autonomy while ensuring system-wide coherence.
+
+5. **Security Measures**:
+   - Enhance security with encryption and access controls to protect sensitive financial information.
+
+6. **Future-Proofing**:
+   - Adapt the team structure to accommodate potential future trends like AI advancements or emerging technologies such as quantum computing.
+
+7. **Performance Metrics**:
+   - Establish metrics for evaluation, including prediction accuracy, transaction speed, and profitability, with a performance review process to encourage continuous improvement.
+
+8. **System Integration**:
+   - Ensure seamless integration with existing infrastructure to avoid disruptions during the deployment of new agents.
+
+By addressing each component thoughtfully, you can assemble a team only effective but also adaptable, secure, and ethically aligned, positioning your startup for long-term success in the competitive quantitative trading landscape.
+`
+    // try {
+  // console.log('PAYLOAD', payload)
+  const block = await json(payload, '{"agents": [{"name": "Agent Name", "intent": "agent intent", "prompt": "agent prompt with \${arg0}"}], "continue": true}"')
+  const result = JSON.parse(block)
+      if (!result.continue) {
+        console.log('EXITED')
+        return
+      }
+
+      for (const agent of result.agents) {
+        if (!context[agent.name]) context[agent.name] = []
+        const r = await ask(agent.prompt)
+        context[agent.name].push({intent: agent.intent, result: r})
+      }
+
+    // } catch (e) {
+      // context.history.push({intent, response: payload, error: 'mailformed response'})
+      // console.log('Mailformed response')
+    // }
+  // }
+  await store(context)
+}
