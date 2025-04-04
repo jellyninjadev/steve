@@ -3,3 +3,4 @@ state.json
 out.json
 save
 !save/index.ts
+.env

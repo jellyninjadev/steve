@@ -13,14 +13,6 @@ interface Message {
   content: string;
 }
 
-// Interface for history entry
-interface HistoryEntry {
-  role: string;
-  intent: string;
-  commands: string[];
-  outcome: string;
-}
-
 // FIXME still very bad at parsing
 function parseCommand(response: string): { command: string; content?: string } | null {
   const lines = response.split("\n");
@@ -32,7 +24,7 @@ function parseCommand(response: string): { command: string; content?: string } |
           const contentLines = [];
           for (let k = j + 1; k < lines.length; k++) {
             if (lines[k].startsWith("```")) break;
-            contentLines.push(lines[k]);
+            contentLines.push(lines[k] as string);
           }
           return { command, content: contentLines.join("\n") };
         }
@@ -50,13 +42,13 @@ async function runShellCommand(command: string, input = '') {
   console.log(`$ ${command} ${input}`)
   const proc = Bun.spawnSync(["/bin/sh", "-c", command], { stdin: input ? "pipe" : undefined })
   if (input) {
-    const stdin = await proc.stdin
+    const stdin = await (proc as any).stdin;
     await stdin?.write(input)
     await stdin.end()
   }
   const output = await new Response(proc.stdout).text()
   const error = await new Response(proc.stderr).text()
-  await proc.exited
+  await (proc as any).exited;
   return proc.exitCode === 0 ? output.trim() : `Error: ${error}`
 }
 
@@ -64,12 +56,6 @@ const assertObservation = async (observation: string, command: string, intent: s
   const res = await ask(`Does '${observation.trim()}' that I received from running '${command}' is plausible based on what the command is designed to do and answers original question: ${intent}. If the response seems incorrect or implausible respond with {"success": false}, otherwise respond with {"success": true})`, {model: 'llama3', stream: false, format: 'json'})
   const payload = JSON.parse(res)
   return payload.success
-}
-
-async function queueHistory(role: string, intent: string, commands: string[], outcome: string) {
-  // const entry: HistoryEntry = { role, intent, commands, outcome };
-  // await redis.lPush(HISTORY_QUEUE, JSON.stringify(entry));
-  return Promise.resolve()
 }
 
 async function runAgent(role: string, intent: string) {
