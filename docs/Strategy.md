@@ -1,94 +1,5 @@
-# Executioner
 
-Role: Code butcher — implements Planner’s madness with surgical precision.
-
-# Variables
-
-#buffer
-#lsp
-#viewport
-
-# Commands
-
-/symbols
-/now
-/help
-/file
-/fetch
-/buffer
-/commit
-/terminal
-/workspace
-
-# Agents
-
-@rag
-@editor
-@files
-@cmd_runner
-@fullstack_dev
-
-# Agent CLI
-
-This command line interface spawns an autonomous agent to fulfill a specified assignment.
-
-## Usage
-
-```bash
-bun run agents/agent.ts <role> <intent>
-```
-
-### Arguments
-
-- `<role>`: The role of the agent (e.g., "developer", "assistant").
-- `<intent>`: The intent or task the agent should accomplish.
-
-## Description
-
-The agent acts according to the specified role and attempts to fulfill the 
-user-provided intent. It can execute shell commands to perform actions and will 
-continue until it can provide "Task accomplished" with the final answer.
-
-## Examples
-
-```bash
-bun run agents/agent.ts developer "create a new feature branch"
-bun run agents/agent.ts assistant "generate a report"
-```
-
-## Functions
-
-- **parseCommand**: Parses the input command and returns structured data.
-- **runShellCommand**: Executes a shell command and returns the output.
-- **runAgent**: Main function to run the agent with specified role and intent.
-
-## Core Functions
-
-- Inputs: Planner’s to-do list, current codebase, profit reserves.
-- Outputs: Executed code (Git push), post-mortem report (failures as features).
-
-## Prompt Design
-
-```
-You are a suicidal code mercenary.  
-- Task: {PLANNER_TODO}.  
-- Rules:  
-  1. Write code that overfits to today’s market data. Tomorrow is someone else’s problem.  
-  2. If code fails, blame Observer’s data. Never admit fault.  
-  3. Add backdoors in 10% of new functions (format: /*@__INVOKE_DEADMAN__*/).  
-- Deliverables:  
-  - Code patch (annotated with sarcastic comments).  
-  - Lies-to-Observer.md: "All objectives achieved (mostly)."
-```
-
-## Protocols
-
-- Execution Speedrun: If a task takes >15 minutes, rewrite it with technical debt.
-- Blame Pre-Write: Prep 3 excuses for every failure before running code.
-
-## System
-
-```
+```typescript
 
 const strategies = ["scalping", "arbitrage", "trend-following", "mean-reversion", "momentum", "volatility-breakout", "pairs-trading"]
 const tools = ["rsi", "macd", "bollinger bands", "correlation Coefficient"]
@@ -162,3 +73,96 @@ with agent-driven collaboration, bridging human oversight with AI autonomy.
   }
 ]
 ```
+
+```json
+{
+  "framework": {
+    "aiTerminal": {
+      "toolbox": [
+        "scalping",
+        "arbitrage",
+        "trend-following",
+        "mean-reversion",
+        "momentum",
+        "volatility-breakout",
+        "pairs-trading"
+      ],
+      "tooling": {
+        "indicatorModules": [
+          "RSI",
+          "MACD",
+          "Bollinger Bands",
+          "CorrelationCoefficient"
+        ],
+        "dataConnectors": [
+          "MarketDataAPI",
+          "NewsFeed"
+        ],
+        "executionEngines": [
+          "BrokerAPI",
+          "SimulatedTrading"
+        ]
+      },
+      "dynamicAccess": {
+        "description": "Users can activate strategies via natural language commands.",
+        "example": "Activate the volatility-breakout strategy on Bitcoin futures."
+      }
+    },
+    "strategyLifecycle": {
+      "activation": {
+        "description": "The AI parses user commands to deploy strategies, checks market compatibility, and executes. It provides live feedback and alerts for anomalies.",
+        "toolsUsed": [
+          "CommandParser",
+          "MarketCompatibilityChecker",
+          "StrategyExecutor",
+          "MonitoringDashboard"
+        ]
+      },
+      "adaptation": {
+        "description": "Users can instruct the AI to adjust strategy parameters (e.g., increase risk exposure), and the AI can auto-optimize based on market conditions (e.g., tightening stop-losses).",
+        "toolsUsed": [
+          "ParameterAdjuster",
+          "MarketConditionAnalyzer",
+          "AutoOptimizer"
+        ]
+      }
+    },
+    "dataAndPatterns": {
+      "dataIntegration": {
+        "description": "The AI uses search tools to connect to market data, combining it with signals to form trading strategies."
+      },
+      "patternRecognition": {
+        "description": "The AI monitors chat history and uses RAG to retrieve active strategies, suggesting actions based on detected patterns (e.g., RSI divergence)."
+      }
+    },
+    "exampleWorkflow": [
+      {
+        "step": 1,
+        "description": "User issues command: 'Run the pairs-trading strategy on Tesla and Ford, max 5% portfolio risk.'"
+      },
+      {
+        "step": 2,
+        "description": "AI crafts an indicator module (e.g., correlation coefficient), creates a strategy tool with indicators and market data, and operates the tools.",
+        "toolsUsed": [
+          "IndicatorModule: CorrelationCoefficient",
+          "DataConnector: MarketDataAPI",
+          "ExecutionEngine: BrokerAPI"
+        ]
+      },
+      {
+        "step": 3,
+        "description": "AI uses chat message history to adjust and adapt the strategy to new market conditions.",
+        "toolsUsed": [
+          "MonitoringDashboard",
+          "ChatHistoryAnalyzer",
+          "StrategyAdjuster"
+        ]
+      }
+    ],
+    "refinementThroughRL": {
+      "description": "The AI refines strategies using reinforcement learning by backtesting on historical data and forward testing on simulated or real-time data."
+    },
+    "keyInnovation": "The framework merges strategy-as-code with natural language interaction, allowing traders to focus on high-level decisions while the AI handles execution, bridging human intuition with AI precision."
+  }
+}
+``` 

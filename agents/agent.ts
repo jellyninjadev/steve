@@ -1,11 +1,16 @@
-import { ask, chat } from "../steve";
+import { createClient } from 'redis'
+import { ask, chat } from '../steve'
 
-// Redis client setup
-// const redis = createClient({
-//   url: "redis://localhost:6379", // Adjust URL as needed
-// });
-// await redis.connect();
-// const HISTORY_QUEUE = "history_queue";
+const redis = createClient({
+  url: 'redis://localhost:6379'
+})
+
+const HISTORY_QUEUE = "history_queue"
+
+const push_message = (message: Message) => {
+  return redis.lPush(HISTORY_QUEUE, JSON.stringify(message))
+}
+
 
 // Message type for LLM chat history
 interface Message {
@@ -21,10 +26,10 @@ function parseCommand(response: string): { command: string; content?: string } |
       const command = lines[i].slice(1).trim();
       for (let j = i + 1; j < lines.length; j++) {
         if (lines[j].startsWith("```")) {
-          const contentLines = [];
+          const contentLines: string[] = [];
           for (let k = j + 1; k < lines.length; k++) {
             if (lines[k].startsWith("```")) break;
-            contentLines.push(lines[k] as string);
+            contentLines.push(lines[k]);
           }
           return { command, content: contentLines.join("\n") };
         }
@@ -53,9 +58,7 @@ async function runShellCommand(command: string, input = '') {
 }
 
 const assertObservation = async (observation: string, command: string, intent: string): Promise<string> => {
-  const res = await ask(`Does '${observation.trim()}' that I received from running '${command}' is plausible based on what the command is designed to do and answers original question: ${intent}. If the response seems incorrect or implausible respond with {"success": false}, otherwise respond with {"success": true})`, {model: 'llama3', stream: false, format: 'json'})
-  const payload = JSON.parse(res)
-  return payload.success
+  return ask(`Does '${observation.trim()}' that I received from running '${command}' is plausible based on what the command is designed to do and answers original question: ${intent}. Respond with (Execution assertion: <assertion>).`, {model: 'llama3', stream: false})
 }
 
 async function runAgent(role: string, intent: string) {
@@ -66,31 +69,36 @@ async function runAgent(role: string, intent: string) {
       You can execute shell commands to perform actions.
       - Use "$ <command>" to run a shell command.
       - For commands needing input (e.g., git apply or echo), provide the content in a code block (\`\`\`) after the command.
-      After a command, you'll receive an observation. Continue until you can provide "Task accomplished" with the final answer.
+      Do not output attempt to output execution result.
+      Continue until you can provide "Task accomplished: yes".
       Dont output anything else.
     `
   }
 
   const messageHistory: Message[] = [systemMessage, {role: "user", content: intent}]
+  push_message({role: 'user', content: intent})
 
   const executedCommands: string[] = []
 
   while (true) {
     // console.log(messageHistory)
     const assistantResponse = await chat(messageHistory)
+    push_message({role: 'assistant', content: assistantResponse})
     messageHistory.push(({role: "assistant", content: assistantResponse}))
+
+    // FIXME Add the final message: Task accomplished
 
     const action = parseCommand(assistantResponse)
     if (action) {
       executedCommands.push(action.command)
       const observation = await runShellCommand(action.command, action.content)
       messageHistory.push({role: 'system', content: `${observation}`})
-      const accomplished = await assertObservation(observation, action.command, intent)
-      if (accomplished) {
-        return observation
-      }
+      push_message({role: 'system', content: `${observation}`})
+      const assertion = await assertObservation(observation, action.command, intent)
+      push_message({role: 'assistant', content: `${assertion}`})
     }
   
+    push_message({role: 'system', content: "Please provide a '$ <command>' or indicate 'Task accomplished' with the final answer."})
     messageHistory.push({role: "system", content: "Please provide a '$ <command>' or indicate 'Task accomplished' with the final answer."})
   }
 }
@@ -104,9 +112,11 @@ if (!role || !intent) {
 }
 
 try {
+  await redis.connect();
   const res = await runAgent(role, intent)
   console.log(res)
 } finally {
-  process.exit(1)
-  // await redis.quit()
+  await redis.quit()
+  console.log(`Ran for ${(Bun.nanoseconds() / 1000000000).toFixed(2)}s`)
+  process.exit()
 }

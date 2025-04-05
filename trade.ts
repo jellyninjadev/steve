@@ -71,7 +71,7 @@ const options = {
       console.log(`/short ${ticker} ${leverage} ${margin}`)
 
       const balance = await client.getBalanceV3()
-      const usdt = balance.filter(ticker => ticker.asset === 'USDT')?.balance ?? 0
+      const usdt = balance.filter(ticker => ticker.asset === 'USDT')[0]?.balance ?? 0
 
       if (usdt == 0) return 'Error: 0 balance'
 
@@ -82,7 +82,7 @@ const options = {
         symbol: ticker,
         side: 'SELL',
         type: 'MARKET',
-        quantity
+        quantity,
       })
     }
   },

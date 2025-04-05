@@ -16,6 +16,7 @@
     "@mtproto/core": "^6.3.0",
     "binance": "^2.15.16",
     "hyperliquid": "^1.7.3",
+    "redis": "^4.7.0",
     "typedoc": "^0.28.0"
   }
 }
