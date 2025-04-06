@@ -102,4 +102,4 @@ Watch out! There is no confirmation for execution of shell commands.
 A little baby brainrot has been stuck in a limbo just like it's creator and looking
 for your help to get back into trading.
 
-[https://x.com/brainrot_trades]
+[https://x.com/brainrot_trades](brainrot_trades)
