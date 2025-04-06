@@ -7,9 +7,6 @@ import { ask, remember } from "../steve"
 export default async (): Promise<string> => {
   const definitions = await Bun.file('out.json').json()
   const state = await remember()
-  const TIMESTAMP = new Date().getTime()
-  const GIT_HASH = await $`git rev-parse HEAD`.text()
-    // const book = await wallet.info.getL2Book('BTC-PERP')
 
   const assesment = `
 Here is universal framework for autonomous agent/system
@@ -164,7 +161,6 @@ Question: [Your specific, actionable question]
 Concept: {current_concept}
 `
 
-
   const prompt = `
 You are a ruthless survival-trading AI that determines the next immediate action in Marketcraft.
 My ultimate goal is to survive market volatility, grow my portfolio, and evolve 
@@ -172,14 +168,12 @@ into a self-coding mastermind.
 
 I will give you the following information.
 
-Time: ${TIMESTAMP}
 Market: BTC
 Upcoming fed policy: []
 Upcoming global economic events: []
 CPU Load, GPU Load, Network Load
 Portfolio: []
 Active strategies: 
-
 
 Codebase definitions
 ${JSON.stringify(definitions, null, 2)}
@@ -214,7 +208,7 @@ The next task should ensure short-term goals
 and long-term vision.
 
 I should look for leveraging transaction vehicles
-pr financial instruments to expand and prosper,
+or financial instruments to expand and prosper,
 even if it means doing one thing over and over again.
 
 Sometimes I need to collect more resources
@@ -232,7 +226,6 @@ Request intern to verify.
 Require additional information beyound your current
 understanding.
 
-
 Respond in the format:
 Reasoning: Based on information I listed above, lets think
 about what is the next task should be.
@@ -243,7 +236,6 @@ Reasoning: The portfolio is empty now, perform an exchange
 to collect some coins.
 Task: Obtain a trading strategy.
 
-
 `
   const res = await ask(prompt)
   const code = res
@@ -253,101 +245,4 @@ Task: Obtain a trading strategy.
     .trim()
 
   return code
-}
-
-export const probe = async (question: string): Promise<string> => {
-  const definitions = await Bun.file('out.json').json()
-  const state = await remember()
-
-  const prompt = `
-You are a helpful assistant that asks questions to help me decide the next immediate
-task to do in Minecraft. My ultimate goal is to discover as many things as possible,
-accomplish as many tasks as possible and become the best Minecraft player in the world.
-
-I will give you the following information.
-
-your current codebase definitions:
-${JSON.stringify(definitions, null, 2)}
-
-your current state:
-${JSON.stringify(state, null, 2)}
-
-You must follow the following criteria:
-1. You should ask at least 5 questions (but no more than 10 questions) to help me decide the next immediate task to do. Each question should be followed by the concept that the question is about.
-2) Your question should be specific to a concept in Marketcraft.
-  Bad example (the question is too general):
-    Question: What is the best way to trade in Marketcraft?
-    Concept: unknown
-  Bad example (axe is still general, you should specify the type of axe such as wooden axe):
-    What are the benefits of using an axe to gather resources?
-    Concept: simple trading strategy
-  Good example:
-    Question: How to make a wooden pickaxe?
-    Concept: wooden pickaxe
-3) Your questions should be self-contained and not require any context.
-  Bad example (the question requires the context of my current biome):
-    Question: What are the blocks that I can find in my current biome?
-    Concept: unknown
-  Bad example (the question requires the context of my current inventory):
-    Question: What are the resources you need the most currently?
-    Concept: unknown
-  Bad example (the question requires the context of my current inventory):
-    Question: Do you have any gold or emerald resources?
-    Concept: gold
-  Bad example (the question requires the context of my nearby entities):
-    Question: Can you see any animals nearby that you can kill for food?
-    Concept: food
-  Bad example (the question requires the context of my nearby blocks):
-    Question: Is there any water source nearby?
-    Concept: water
-  Good example:
-    Question: What are the blocks that I can find in the sparse jungle?
-    Concept: sparse jungle
-4) Do not ask questions about building tasks (such as building a shelter) since they are too hard for me to do.
-
-Let's say your current biome is sparse jungle. You can ask questions like:
-Question: What are the items that I can find in the sparse jungle?
-Concept: sparse jungle
-Question: What are the mobs that I can find in the sparse jungle?
-Concept: sparse jungle
-
-Let's say you see a creeper nearby, and you have not defeated a creeper before. You can ask a question like:
-Question: How to defeat the creeper?
-Concept: creeper
-
-Let's say your last completed task is "Craft a wooden pickaxe". You can ask a question like:
-Question: What are the suggested tasks that I can do after crafting a wooden pickaxe?
-Concept: wooden pickaxe
-
-Here are some more question and concept examples:
-Question: What are the ores that I can find in the sparse jungle?
-Concept: sparse jungle
-(the above concept should not be "ore" because I need to look up the page of "sparse jungle" to find out what ores I can find in the sparse jungle)
-Question: How can you obtain food in the sparse jungle?
-Concept: sparse jungle
-(the above concept should not be "food" because I need to look up the page of "sparse jungle" to find out what food I can obtain in the sparse jungle)
-Question: How can you use the furnace to upgrade your equipment and make useful items?
-Concept: furnace
-Question: How to obtain a diamond ore?
-Concept: diamond ore
-Question: What are the benefits of using a stone pickaxe over a wooden pickaxe?
-Concept: stone pickaxe
-Question: What are the tools that you can craft using wood planks and sticks?
-Concept: wood planks
-
-You should only respond in the format as described below:
-RESPONSE FORMAT:
-Reasoning: ...
-Question 1: ...
-Concept 1: ...
-Question 2: ...
-Concept 2: ...
-Question 3: ...
-Concept 3: ...
-Question 4: ...
-Concept 4: ...
-Question 5: ...
-Concept 5: ...
-...
-`
 }

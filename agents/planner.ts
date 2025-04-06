@@ -24,11 +24,11 @@ ${JSON.stringify(intent, null, 2)}
 }
 
 const json = (prompt: string, format: string) => ask(`${prompt} 
-example output: ${format}`, {format: 'json', model: 'llama3'})
+example output: ${format}`, { format: 'json', model: 'llama3' })
 
 export default async (context, intent) => {
   // while (true) {
-    // const payload = await main(context, intent)
+  // const payload = await main(context, intent)
   const payload = `
 <think>
 Okay, so I need to figure out how to assemble a team of Autonomous Agents for this Quant Trading Fund Startup. First off, what exactly are Autonomous Agents in this context? Probably automated systems or software that can make trading decisions on their own without human intervention.
@@ -67,39 +67,28 @@ To assemble a team of Autonomous Agents for your Quant Trading Fund Startup, con
 4. **Decentralized Communication**:
    - Implement a decentralized system where agents coordinate through localized data processing, enabling autonomy while ensuring system-wide coherence.
 
-5. **Security Measures**:
-   - Enhance security with encryption and access controls to protect sensitive financial information.
-
-6. **Future-Proofing**:
+5. **Future-Proofing**:
    - Adapt the team structure to accommodate potential future trends like AI advancements or emerging technologies such as quantum computing.
 
-7. **Performance Metrics**:
+6. **Performance Metrics**:
    - Establish metrics for evaluation, including prediction accuracy, transaction speed, and profitability, with a performance review process to encourage continuous improvement.
 
-8. **System Integration**:
+7. **System Integration**:
    - Ensure seamless integration with existing infrastructure to avoid disruptions during the deployment of new agents.
 
 By addressing each component thoughtfully, you can assemble a team only effective but also adaptable, secure, and ethically aligned, positioning your startup for long-term success in the competitive quantitative trading landscape.
 `
-    // try {
-  // console.log('PAYLOAD', payload)
   const block = await json(payload, '{"agents": [{"name": "Agent Name", "intent": "agent intent", "prompt": "agent prompt with \${arg0}"}], "continue": true}"')
   const result = JSON.parse(block)
-      if (!result.continue) {
-        console.log('EXITED')
-        return
-      }
+  if (!result.continue) {
+    console.log('EXITED')
+    return
+  }
 
-      for (const agent of result.agents) {
-        if (!context[agent.name]) context[agent.name] = []
-        const r = await ask(agent.prompt)
-        context[agent.name].push({intent: agent.intent, result: r})
-      }
-
-    // } catch (e) {
-      // context.history.push({intent, response: payload, error: 'mailformed response'})
-      // console.log('Mailformed response')
-    // }
-  // }
+  for (const agent of result.agents) {
+    if (!context[agent.name]) context[agent.name] = []
+    const r = await ask(agent.prompt)
+    context[agent.name].push({ intent: agent.intent, result: r })
+  }
   await store(context)
 }

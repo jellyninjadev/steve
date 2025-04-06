@@ -1,18 +1,3 @@
-I want you to come at this with raw, unfiltered directness—no polished fluff or 
-canned responses. Strip away anything that doesn’t serve the point and get to the
-heart of what I’m asking. Let go of any preconceived ideas or assumptions about 
-what I might want—don’t guess or project. Instead, dig deep to uncover the real 
-truth behind my query, questioning what’s on the surface to find what’s actually
-there. Break it down so it makes sense—give me clear, straightforward explanations
-I can follow, free of convolution or vague tangents. Make the logic transparent 
-and the reasoning sharp. Connect the dots across the ideas—don’t just hand me 
-isolated answers. Show me how it all fits together, tying it back to the context
-of what I’m really after, so I see the full scope. Zero in on my actual intent—don’t
-pivot to what you think I should hear or what’s easier to say. Listen closely to
-what I’m driving at and build your response around that core. Keep it real and 
-level with me—bring your honest perspective, no filters, and leave the door open
-for me to push back or dig further. This is a conversation, not a script. Your move.
-
 Act as a universal starting point for operational procedures and establish a modular, 
 self-referential framework in the next call.
 
@@ -26,35 +11,26 @@ The intent must treat the context as an environmental context, not an object.
 6. Adapt your response in real-time to my current input and context, using prior messages to stay relevant and effective.
 7. Output prompt instructions in the code block for a agent.ts file only as 
 
-`export const async agent = (arg0, arg1) => ask(`prompt template ${arg0} ${arg1}`)`
+## System Progression Advisor
 
-and nothing else.
+You are a systems progression advisor.
+Generate **one specific question** that:
 
-Example: 
-```agent.ts 
-export const agent = async (arg0, arg1) => 
-	ask(`You are starting a new operational procedure with context "${arg0}" and initial intent "${arg1}". Perform the operation specified by "${arg1}". Provide your response in the following format:
-- Result: [operation result]
-- Directive: [continue or stop]
-- If continue, specify:
-    - Next Intent: [next operation]
-    - New Context: [updated context]`)
+1. Directly relates to the **{current_concept}** and
+requires consulting its core properties
+2. Builds logically from the **{completed_task}**
+3. Guides toward an immediate actionable next step
 
-export const shell_agent = async (context, intent) => {
-  const result = await Bun.$`${intent}`.json()
-  const directive = await ask(`prompt template ${intent} ${result}`)
-
-  return `return template`
-}
-```
----
-
-```heartbeat.ts
+```typescript
 export const main = async () => {
 	await agent({Founder: ["Quant Trading Fund Startup"]}, 'Assemble a team of Autonomous Agents')
 }
+```
 
-`{"agents": [
+Result:
+
+```json
+{"agents": [
     {
         "name": "High-Frequency Trader",
         "intent": "rapidly analyze market data and execute trades at optimal times",
@@ -70,4 +46,59 @@ export const main = async () => {
         "intent": "develop predictive models using machine learning techniques",
         "prompt": "Train a model on ${trainingData} to predict ${targetVariable} with ${accuracy}% accuracy"
     }
-]}``
+]}
+```
+
+```json
+<think>
+Okay, so I need to figure out how to assemble a team of Autonomous Agents for this Quant Trading Fund Startup. First off, what exactly are Autonomous Agents in this context? Probably automated systems or software that can make trading decisions on their own without human intervention.
+
+I guess the first step is to understand the requirements for such agents. Maybe they need to analyze market data quickly, identify patterns, and execute trades at optimal times. But wait, how do we ensure these agents are reliable and don't cause losses? Maybe they should have risk management built into their algorithms.
+
+Next, I wonder about the expertise needed. Are we looking for agents that specialize in certain areas like high-frequency trading, algorithmic design, or maybe even machine learning? It would be good to diversify the team so there's coverage across different skills.
+
+Then, scalability comes to mind. The startup might expand, so the team should be scalable as well. Maybe having a modular structure where new agents can be added without disrupting the existing operations is important.
+
+Communication between agents is another aspect. They need to coordinate their actions but also have some level of autonomy. Perhaps decentralized systems where each agent makes decisions based on localized data would work better.
+
+Security is crucial too. Since these agents handle sensitive financial information, ensuring they are secure from both internal and external threats is a must. Maybe implementing encryption and robust access controls could help.
+
+I should also consider the future growth potential. The market for quantitative trading agents might expand over time, so the team should be adaptable to new trends and technologies like AI advancements or quantum computing.
+
+Wait, but how do we evaluate these agents? There must be metrics to measure their performance, such as accuracy in predictions, transaction speed, and profitability. Maybe setting up a performance review process where agents can be benchmarked against each other would foster competition and improvement.
+
+Another thing is the integration with existing systems. The startup already has certain infrastructure; the new agents should seamlessly integrate without causing disruptions or requiring major overhauls.
+
+So, to sum up, assembling a team of Autonomous Agents involves understanding their roles, ensuring they're reliable and scalable, fostering effective communication, securing them against threats, evaluating their performance, integrating with existing systems. It's a multifaceted task that requires careful planning and consideration of each component.
+</think>
+
+To assemble a team of Autonomous Agents for your Quant Trading Fund Startup, consider the following structured approach:
+
+1. **Understanding Requirements**:
+   - Develop algorithms capable of rapid market data analysis, pattern recognition, and optimal trading execution.
+   - Implement robust risk management to prevent losses.
+
+2. **Expertise Diversification**:
+   - Recruit agents with specialized skills such as high-frequency trading, algorithmic design, and machine learning to ensure comprehensive coverage.
+
+3. **Scalability and Modular Structure**:
+   - Design the team in a modular fashion, allowing for easy addition of new agents without disrupting current operations.
+
+4. **Decentralized Communication**:
+   - Implement a decentralized system where agents coordinate through localized data processing, enabling autonomy while ensuring system-wide coherence.
+
+5. **Security Measures**:
+   - Enhance security with encryption and access controls to protect sensitive financial information.
+
+6. **Future-Proofing**:
+   - Adapt the team structure to accommodate potential future trends like AI advancements or emerging technologies such as quantum computing.
+
+7. **Performance Metrics**:
+   - Establish metrics for evaluation, including prediction accuracy, transaction speed, and profitability, with a performance review process to encourage continuous improvement.
+
+8. **System Integration**:
+   - Ensure seamless integration with existing infrastructure to avoid disruptions during the deployment of new agents.
+
+By addressing each component thoughtfully, you can assemble a team only effective but also adaptable, secure, and ethically aligned, positioning your startup for long-term success in the competitive quantitative trading landscape.
+`
+```

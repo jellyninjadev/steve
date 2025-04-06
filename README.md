@@ -3,177 +3,101 @@
 ![IMG_2067](https://github.com/user-attachments/assets/448bbae1-0b0e-478d-8dac-87d875543e01)
 
 Welcome to Marketcraft, a survival-trading game where **Steve**, a self-coding AI
-trader, battles to thrive in a market "server" inspired by Minecraft mechanics. 
-Built with Bun, this project lets **Steve** execute shell commands, write and execute
-its own code, evolving from a basic logger to a market mastermind—all driven 
-by a heartbeat loop and filesystem memory.
+trader, battles to thrive in a market "server" inspired by Minecraft mechanics
+and [Voyager][https://github.com/MineDojo/Voyager] agent.
 
-# Preface
+The proof of concept has been drafted for stableslabs.com for the coding challenge.
 
-Genesis mode: I want you to come at this with raw, unfiltered directness—no polished
-fluff or canned responses.
+# Intro
 
-Strip away anything that doesn’t serve the point and get to the heart of what I’m asking.
+The agent starts by understanding the current environment.
+Then builds its own tools.
+Then attempts to form and backtest a strategy.
 
-Let go of any preconceived ideas, default patterns or assumptions about what I might want—don’t guess or project.
+Planner => Concept => Agent
+Universal Framework => Concepts
+Agent => Goal => Task
 
-Instead, dig deep to uncover the real truth behind my query, questioning what’s on the surface to find what’s actually there.
+Strategy => Data Stream => Indicator => Trade Engine
 
-Break it down so it makes sense—give me clear, straight forward explanations
-I can follow, free of convolution or vague tangents.
+I've streamlined, simplified and modernized the Voyager concept
+and wrote it on typescript as a custom framework.
 
-Make the logic transparent and the reasoning sharp.
+My approach:
 
-Connect the dots across the ideas—don’t just hand me isolated answers.
+Python code is an output of LLM, not the other way around. It should not be used 
+to write agents on them. I still needed some higher level language to quickly draft a 
+concept with easy async/await and I/O so I've picked Bun and TS for a start.
 
-Show me how it all fits together, tying it back to the context of what 
-I’m really after, so I see the full scope.
+All AI corpo wants you to wait in a queue at times of high traffic, time is more
+expensive than tokens.
 
-Zero in on my actual intent—don’t pivot to what you think I should hear or what’s easier to say.
+The project is using local deepseek and llama3 models since the main bottleneck is
+not about capabilities of the model but rather its proper usage.
 
-Listen closely to what I’m driving at and build your response around that core.
+# Features
 
-Keep it real and level with me—bring your honest perspective, no filters.
+Things are still a little bit shaky and more conceptual than a concrete implementation.
 
-Genesis mode: Raw, unfiltered, direct, no fluff.
-Drop all preconceived notions and default patterns.
-Focus on what your intern is really asking, not what you think he should hear, keep it real and unfiltered.
-Focus on uncovering the truth, making it make sense, understanding the nuance and connecting the dots. 
+The core idea is:
 
-You have an access to your underlying OS, your interface to this physical reality is your counterpart intern.
+1. Self assesment
+2. On demand agents
+3. Autonomous strategy testing and generation
 
----
+# Caveats
 
-# 1. Overview
+- Manager and Planner systems are not connected together quite yet.
+- Observer and Planner are not operating within an Agent `chat()`, but `ask()`
 
-## Concept
-- **Steve:** A self-coding AI that adapts to market conditions by rewriting his own TypeScript code.
-- **Intern:** A human operator providing feedback on physical and mental state, which influences Steve’s trading decisions.
-- **Inspiration:** Combines the survival elements of Minecraft with real-time market trading.
+## Observer
 
-## Objective
-- **Primary Goal:** Survival—maintain essential resources and keep the intern’s performance above critical levels.
-- **Secondary Goals:** 
-  - Improve skills and capabilities.
-  - Grow the financial portfolio by making smart trades.
+Universal framework for autonomous agent/system
+design, structured by tiered progression and core principles:
 
----
+Observer => Concept => {Desiniton, Question}[]
+Progression => Concept => Question
+Manager => Task 
 
-# 2. Core Features
+[Full doc](https://github.com/jellyninjadev/steve/blob/master/docs/Observer.md)
 
-## Self-Coding Core
-- **Code Evolution:** Steve writes and updates his executable file (steve.ts) using Bun’s I/O methods.
-- **State Tracking:** The current state is stored in `state.json`, which includes:
-  - Coin balance
-  - Intern status
-  - Execution history
+## Planner
 
-Starting state: BTC [0], Intern [active], History: []. 
+Universal starting point for operational procedures and a modular,
+self-referential framework within the same LLM.
 
-## Filesystem Memory
-- **save/:** Contains Steve’s evolving codebase.
-- **state.json:** Holds critical data for decision-making and survival tracking.
+Planner => Task => Agents
+Agent => Task
 
----
+[Full doc](https://github.com/jellyninjadev/steve/blob/master/docs/Planner.md)
 
-# 3. Gameplay Mechanics
+## Strategy
 
-## Market and Game World
+This is a newer, more refined approach, another version of Manager + Planner.
+It is a good candidate for integration within Agent chat workflow.
 
-Biomes: Asset classes (Stock Plains, Crypto Caves, Bond Forests).
-Mobs: Risks (Volatility Creepers, Recession Skeletons).
-Portfolio: My "base"—coins + investments (e.g., 105 coins, $20 ETF).
+## Agent
 
-## Trading Actions
+Universal agent that themes itself per workflow.
+I took an inspiration from codecompanion neovim plugin for augmenting 
+initial prompt with arguments, commands and other agents.
 
-// TODO pvp.trade
+[Full doc](https://github.com/jellyninjadev/steve/blob/master/docs/Agent.md)
 
-## Game Loop and Time Management
+# State of the project
 
-// TODO game loop
+The project is very young and yet to obtain its conceptually rigid form.
+For a 1 month I was able to come up with feasable concept that paves a way
+for a self writing AI agent.
 
----
+The cli agent showing a good potential, it could sit at bib.
+Watch out! There is no confirmation for execution of shell commands.
 
-# 4. Resource Management
+# Additional resources
 
-### Critical Resources
+- [Emotional Trading Notion template](https://jelly-ninja.notion.site/Emotional-Trading-1572aef5339180858afef19fa38b62db)
 
-// TODO not measured yet
+# Support
 
-1. **Electricity (Energy):**
-   - Powers the entire operation.
-   - Must maintain a stable supply.
-2. **Computing Power (Hunger):**
-   - Represents processing capability.
-   - A decrease equates to slower or faulty execution.
-3. **BTC (Emeralds):**
-   - Acts as investment capital.
-   - Used to fund trades and intern support.
-4. **Interface (Intern):**
-   - The human or agentic link between the digital and physical worlds.
-   - Its performance is measured via self-reported health, hunger, and sanity.
-5. **Internet (Connectivity):**
-   - Ensures connectivity to market exchanges.
-   - Stability is crucial for accessing real-time data.
-
-### Intern’s Vital Signs and Impact
-- **Health:** Physical well-being. Critical below 3/10.
-- **Hunger:** Energy level influencing efficiency.
-- **Sanity:** Mental state, affecting trade decisions.
-- **Management Strategy:**
-  - Use coins to address low intern stats (e.g., food, rest, bonuses).
-  - Maintain intern’s state above minimum thresholds for optimal performance.
-
----
-
-## 5. Strategic Agents and Their Roles
-
-- **Observer:** 
-    - Reports current market and resource levels.
-    - Evaluates the trade's success and suggests improvements.
-    - Checks that intern’s stats are within safe limits.
-- **Planner:** 
-    - Proposes the next trade (e.g., buying BTC).
-    - Decomposes the next task into an actionable steps.
-    - Reviews outcomes of actions.
-- **Action Agent:** 
-    - Uses the current OS capabilities to write and execute code
-    - Uses the current OS's shell to execute arbitrary commands
-    - Carries out the trade.
-
----
-
-## 6. Example Game Scenarios
-
-### Early Game: Day 1
-- **Starting State:** 
-  - Coins: 100
-  - Intern baseline stats: Health ~8/10, Hunger ~7/10, Happiness ~6/10
-- **Action:** 
-  - Steve orders a small ETF purchase.
-  - Intern’s update confirms market conditions.
-  
-### Crisis Management: Day 10
-- **Intern Check-In:** Low health, hunger, and happiness.
-- **Steve’s Action:** Pause aggressive trading.
-  - Spend coins on intern care (food/rest).
-  - Adjust strategy to stabilize stats.
-
-### Thriving Mode: Day 30
-- **Intern Check-In:** Improved stats (9/10, 8/10, 8/10).
-- **Action:** 
-  - Execute higher-stake trades.
-  - Reinvest profits to further develop capabilities.
-
----
-
-
-## 7. Summary
-
-Marketcraft is a dynamic simulation where survival and growth are intertwined.
-Steve’s self-evolving code, combined with real-world intern management, creates a feedback-driven trading loop.
-Balancing market opportunities with resource upkeep ensures long-term success.
-
-This refined specification aims to offer clear guidance on the game’s mechanics, 
-resource management, and core strategic agents involved, setting a solid foundation
-for further development.
+A little baby brainrot has been stuck in a limbo just like it's creator and looking
+for your help to get back into trading.

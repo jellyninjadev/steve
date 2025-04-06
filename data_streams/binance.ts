@@ -1,7 +1,7 @@
-import { WebsocketClient } from 'binance'
+import { KlineInterval, WebsocketClient } from 'binance'
 
 const ticker = process.argv[2]
-const period = process.argv[3]
+const interval: KlineInterval = process.argv[3]
 
 if (!ticker) {
   process.exit(1);
@@ -20,6 +20,6 @@ client.on('message', (data) => {
   process.stdout.write(JSON.stringify(data) + '\n')
 });
 
-client.subscribeKlines(ticker, period, 'usdm')
+client.subscribeKlines(ticker, interval, 'usdm')
       
 

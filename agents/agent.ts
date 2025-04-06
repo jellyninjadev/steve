@@ -1,4 +1,4 @@
-import type {Message} from '../types'
+import type { Message } from '../types'
 import { disconnect, queue } from '../history'
 import { ask, chat } from '../steve'
 
@@ -58,20 +58,20 @@ const agent = async (role: string, intent: string) => {
   }
 
   // local
-  const messageHistory: Message[] = [systemMessage, {role: "user", content: intent}]
+  const messageHistory: Message[] = [systemMessage, { role: "user", content: intent }]
 
   const store = async (message: Message) => {
     messageHistory.push(message)
     return queue(message) // global
   }
 
-  await store({role: 'user', content: intent})
+  await store({ role: 'user', content: intent })
 
   const executedCommands: string[] = []
 
   while (true) {
     const assistantResponse = await chat(messageHistory)
-    await store({role: 'assistant', content: `${assistantResponse}`})
+    await store({ role: 'assistant', content: `${assistantResponse}` })
 
     if (assistantResponse.includes("Task accomplished:")) {
       return assistantResponse.split("Task accomplished:")[1].trim()
@@ -81,10 +81,10 @@ const agent = async (role: string, intent: string) => {
     if (action) {
       executedCommands.push(action.command)
       const result = await shell(action.command, action.content)
-      await store({role: 'assistant', content: `${result}`})
+      await store({ role: 'assistant', content: `${result}` })
     }
 
-    await store({role: 'user', content: "Check the last message and assert if intent was accomplished by returning 'Task accomplished: <answer>' with the final answer or 'Next step: <next_step>' for the next command to run."})
+    await store({ role: 'user', content: "Check the last message and assert if intent was accomplished by returning 'Task accomplished: <output>' with the last successfull command output, not explanation of output or 'Next step: <next_step>' for the next command to run." })
   }
 }
 
@@ -96,10 +96,10 @@ const expand = async (message: string) => {
     },
     commands: {
       shell: async (arg) => Bun.$`${arg}`.text(),
-      patch: async () => {},
-      fetch: async (args) => Bun.fetch(args),
-      swap: async () => {},
-      sentiment: async () => {}
+      patch: async (diff) => Bun.$`git apply < ${diff}`,
+      fetch: async (args) => { }, // TODO Bun.fetch
+      swap: async () => { }, // example: swap COIN1 COIN2 amount
+      sentiment: async (ticker) => { } // example: /sentiment BTC 
     },
     agents: {
       agent: async (message) => agent("universal agent", message),
@@ -116,7 +116,7 @@ const expand = async (message: string) => {
 
   message = message.replace(variablesRegex, replaceVar)
 
-  const commands: {command: string, result: string[]}[] = []
+  const commands: { command: string, result: string[] }[] = []
   let match
   while ((match = commandsRegex.exec(message)) !== null) {
     const parts = match[0].split(/\s+/)
@@ -152,7 +152,6 @@ if (!role || !intent) {
 
 try {
   const message = await expand(intent)
-  console.log(message)
   const res = await agent(role, message)
   console.log(res)
 } finally {

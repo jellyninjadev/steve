@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "start": "while true; do bun index.ts; sleep 5; done",
-    "symbols": "typedoc --skipErrorChecking --json out.json save/index.ts"
+    "symbols": "typedoc --skipErrorChecking --json out.json save/index.ts",
+    "worker": "bun worker.ts"
   },
   "devDependencies": {
     "@types/bun": "latest"

@@ -1,3 +1,5 @@
+Inspired by pvp.trade
+
 1. /long <ticker> <leverage> <%>
 2. /short <ticker> <leverage> <%>
 3. /close <ticker> <%>
