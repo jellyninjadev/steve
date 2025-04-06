@@ -6,7 +6,7 @@ Welcome to Marketcraft, a survival-trading game where **Steve**, a self-coding A
 trader, battles to thrive in a market "server" inspired by Minecraft mechanics
 and [Voyager](https://github.com/MineDojo/Voyager) agent.
 
-The proof of concept has been drafted for stableslabs.com for the coding challenge.
+The proof of concept has been drafted for [stableslabs.com] for the coding challenge.
 
 # Intro
 
