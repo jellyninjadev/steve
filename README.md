@@ -1,5 +1,7 @@
 # Marketcraft
 
+![IMG_2067](https://github.com/user-attachments/assets/448bbae1-0b0e-478d-8dac-87d875543e01)
+
 Welcome to Marketcraft, a survival-trading game where **Steve**, a self-coding AI
 trader, battles to thrive in a market "server" inspired by Minecraft mechanics. 
 Built with Bun, this project lets **Steve** execute shell commands, write and execute
