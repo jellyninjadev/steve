@@ -14,11 +14,11 @@ The agent starts by understanding the current environment.
 Then builds its own tools.
 Then attempts to form and backtest a strategy.
 
-Planner => Concept => Agent
-Universal Framework => Concepts
-Agent => Goal => Task
+- Planner => Concept => Agent
+- Universal Framework => Concepts
+- Agent => Goal => Task
 
-Strategy => Data Stream => Indicator => Trade Engine
+- Strategy => Data Stream => Indicator => Trade Engine
 
 I've streamlined, simplified and modernized the Voyager concept
 and wrote it on typescript as a custom framework.
@@ -55,9 +55,9 @@ The core idea is:
 Universal framework for autonomous agent/system
 design, structured by tiered progression and core principles:
 
-Observer => Concept => {Desiniton, Question}[]
-Progression => Concept => Question
-Manager => Task 
+- Observer => Concept => {Desiniton, Question}[]
+- Progression => Concept => Question
+- Manager => Task 
 
 [Full doc](https://github.com/jellyninjadev/steve/blob/master/docs/Observer.md)
 
@@ -66,8 +66,8 @@ Manager => Task
 Universal starting point for operational procedures and a modular,
 self-referential framework within the same LLM.
 
-Planner => Task => Agents
-Agent => Task
+- Planner => Task => Agents
+- Agent => Task
 
 [Full doc](https://github.com/jellyninjadev/steve/blob/master/docs/Planner.md)
 
