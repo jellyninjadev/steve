@@ -2,6 +2,9 @@ import type {Message} from '../types'
 import { disconnect, queue } from '../history'
 import { ask, chat } from '../steve'
 
+// TODO argparse until \n
+const commands = ['/patch', '/fetch', '/swap', '/sentiment']
+
 // FIXME still very bad at parsing
 function parseCommand(response: string): { command: string; content?: string } | null {
   const lines = response.split("\n");
@@ -27,7 +30,7 @@ function parseCommand(response: string): { command: string; content?: string } |
   return null;
 }
 
-async function runShellCommand(command: string, input = '') {
+const shell = async (command: string, input = '') => {
   console.log(`$ ${command} ${input}`)
   const proc = Bun.spawnSync(["/bin/sh", "-c", command], { stdin: input ? "pipe" : undefined })
   if (input) {
@@ -41,7 +44,7 @@ async function runShellCommand(command: string, input = '') {
   return proc.exitCode === 0 ? output.trim() : `Error: ${error}`
 }
 
-async function runAgent(role: string, intent: string) {
+const agent = async (role: string, intent: string) => {
   const systemMessage: Message = {
     role: "system",
     content: `
@@ -77,12 +80,66 @@ async function runAgent(role: string, intent: string) {
     const action = parseCommand(assistantResponse)
     if (action) {
       executedCommands.push(action.command)
-      const result = await runShellCommand(action.command, action.content)
+      const result = await shell(action.command, action.content)
       await store({role: 'assistant', content: `${result}`})
     }
 
     await store({role: 'user', content: "Check the last message and assert if intent was accomplished by returning 'Task accomplished: <answer>' with the final answer or 'Next step: <next_step>' for the next command to run."})
   }
+}
+
+const expand = async (message: string) => {
+  const map = {
+    vars: {
+      strategies: "Strategy 1: +3%",
+      positions: ["DOGE: 1", "BTC: 0", "USDT: 0"].join("\n")
+    },
+    commands: {
+      shell: async (arg) => Bun.$`${arg}`.text(),
+      patch: async () => {},
+      fetch: async (args) => Bun.fetch(args),
+      swap: async () => {},
+      sentiment: async () => {}
+    },
+    agents: {
+      agent: async (message) => agent("universal agent", message),
+      git: async (message) => agent("git manager", message),
+      strategy: async (message) => agent("strategy manager", message)
+    }
+  }
+
+  const variablesRegex = /#\w+/g
+  const commandsRegex = /\/\w+(\s+\S+)?/g
+  const agentsRegex = /@\w+/g
+
+  const replaceVar = (variable: string) => `${map.vars[variable.slice(1)]}`
+
+  message = message.replace(variablesRegex, replaceVar)
+
+  const commands: {command: string, result: string[]}[] = []
+  let match
+  while ((match = commandsRegex.exec(message)) !== null) {
+    const parts = match[0].split(/\s+/)
+    const command = parts[0].slice(1)
+    const args = parts.slice(1)
+    commands.push({
+      command: args.join(' '),
+      result: await map.commands[command](args.join(' '))
+    })
+  }
+
+  if (commands.length) {
+    const entries = commands.map(entry => `${entry.command}: ${entry.result}`).join('\n')
+    message += `\nCommand Outputs:\n${entries}`
+  }
+
+  while ((match = agentsRegex.exec(message)) !== null) {
+    const _agent = match[0].slice(1)
+    const res = await map.agents[_agent](message)
+    message += `\n${_agent}: ${res}`
+  }
+
+  return message
 }
 
 const role = Bun.argv[2]
@@ -94,7 +151,9 @@ if (!role || !intent) {
 }
 
 try {
-  const res = await runAgent(role, intent)
+  const message = await expand(intent)
+  console.log(message)
+  const res = await agent(role, message)
   console.log(res)
 } finally {
   await disconnect()
