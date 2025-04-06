@@ -1,22 +1,6 @@
-import { createClient } from 'redis'
+import type {Message} from '../types'
+import { disconnect, queue } from '../history'
 import { ask, chat } from '../steve'
-
-const redis = createClient({
-  url: 'redis://localhost:6379'
-})
-
-const HISTORY_QUEUE = "history_queue"
-
-const push_message = (message: Message) => {
-  return redis.lPush(HISTORY_QUEUE, JSON.stringify(message))
-}
-
-
-// Message type for LLM chat history
-interface Message {
-  role: "system" | "user" | "assistant";
-  content: string;
-}
 
 // FIXME still very bad at parsing
 function parseCommand(response: string): { command: string; content?: string } | null {
@@ -57,10 +41,6 @@ async function runShellCommand(command: string, input = '') {
   return proc.exitCode === 0 ? output.trim() : `Error: ${error}`
 }
 
-const assertObservation = async (observation: string, command: string, intent: string): Promise<string> => {
-  return ask(`Does '${observation.trim()}' that I received from running '${command}' is plausible based on what the command is designed to do and answers original question: ${intent}. Respond with (Execution assertion: <assertion>).`, {model: 'llama3', stream: false})
-}
-
 async function runAgent(role: string, intent: string) {
   const systemMessage: Message = {
     role: "system",
@@ -69,37 +49,39 @@ async function runAgent(role: string, intent: string) {
       You can execute shell commands to perform actions.
       - Use "$ <command>" to run a shell command.
       - For commands needing input (e.g., git apply or echo), provide the content in a code block (\`\`\`) after the command.
-      Do not output attempt to output execution result.
-      Continue until you can provide "Task accomplished: yes".
+      Output command only.
       Dont output anything else.
     `
   }
 
+  // local
   const messageHistory: Message[] = [systemMessage, {role: "user", content: intent}]
-  push_message({role: 'user', content: intent})
+
+  const store = async (message: Message) => {
+    messageHistory.push(message)
+    return queue(message) // global
+  }
+
+  await store({role: 'user', content: intent})
 
   const executedCommands: string[] = []
 
   while (true) {
-    // console.log(messageHistory)
     const assistantResponse = await chat(messageHistory)
-    push_message({role: 'assistant', content: assistantResponse})
-    messageHistory.push(({role: "assistant", content: assistantResponse}))
+    await store({role: 'assistant', content: `${assistantResponse}`})
 
-    // FIXME Add the final message: Task accomplished
+    if (assistantResponse.includes("Task accomplished:")) {
+      return assistantResponse.split("Task accomplished:")[1].trim()
+    }
 
     const action = parseCommand(assistantResponse)
     if (action) {
       executedCommands.push(action.command)
-      const observation = await runShellCommand(action.command, action.content)
-      messageHistory.push({role: 'system', content: `${observation}`})
-      push_message({role: 'system', content: `${observation}`})
-      const assertion = await assertObservation(observation, action.command, intent)
-      push_message({role: 'assistant', content: `${assertion}`})
+      const result = await runShellCommand(action.command, action.content)
+      await store({role: 'assistant', content: `${result}`})
     }
-  
-    push_message({role: 'system', content: "Please provide a '$ <command>' or indicate 'Task accomplished' with the final answer."})
-    messageHistory.push({role: "system", content: "Please provide a '$ <command>' or indicate 'Task accomplished' with the final answer."})
+
+    await store({role: 'user', content: "Check the last message and assert if intent was accomplished by returning 'Task accomplished: <answer>' with the final answer or 'Next step: <next_step>' for the next command to run."})
   }
 }
 
@@ -112,11 +94,10 @@ if (!role || !intent) {
 }
 
 try {
-  await redis.connect();
   const res = await runAgent(role, intent)
   console.log(res)
 } finally {
-  await redis.quit()
-  console.log(`Ran for ${(Bun.nanoseconds() / 1000000000).toFixed(2)}s`)
+  await disconnect()
+  console.info(`Ran for ${(Bun.nanoseconds() / 1000000000).toFixed(2)}s`)
   process.exit()
 }
