@@ -1,3 +1,5 @@
+(The Architect)
+
 Act as a universal starting point for operational procedures and establish a modular, 
 self-referential framework in the next call.
 
