@@ -1,3 +1,5 @@
+(Merovingian)
+
 What made sense the most is to have an inventory (codebase), a tools (strategies),
 a way to craft strategies by combining data stream with an indicator(s) and trade
 engines. Higher level unviversal framework for autonomus  agent assess the current
